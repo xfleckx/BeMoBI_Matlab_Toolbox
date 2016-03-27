@@ -1,11 +1,14 @@
-function mazeModel = ImportMazeModel(fileName)
+function mazeModel = ImportMazeModel(filename)
     % ImportMazeModel expect a file containing the representation of a
     % Maze as binary matrix
-    if ~exist(fileName, 'file')
-        throw MException('File not found', fileName);
+    p = inputParser();
+    addRequired(p,'filename',@ischar);
+    parse(p,filename)
+    if ~exist(filename, 'file')
+            throw(MException('ImportMazeModel:FileNotFound', filename));
     end
-
-
-    mazeModel = MazeModel()
-    
+    [~,name,~] = fileparts(filename);
+    mazeModel = MazeModel();
+    mazeModel.Name = name;
+    mazeModel.Matrix = dlmread(filename);
 end
