@@ -20,7 +20,25 @@ stream_set_wo_empty_cells = requested_streams(~cellfun(@isempty, requested_strea
 
 %% plot a time series for the marker stream
 marker = stream_set_wo_empty_cells{1};
+clear stream_set_wo_empty_cells
+
+%% get all marker types
+%  assuming that are defined in a way like
+%  <MarkerType><delimiter>[<MarkerParams>]
+
 
 %% get a subset of markers
-% timings for trial durations so get only the 
-filtered_Stream = FilterStreamByMarker(['BeginTrial'; 'EndTrial']);
+expectedTrialTypes = {'BeginTrial', 'EndTrial'};
+filtered_Stream_Containing_Trials = FilterStreamByMarkers(marker, expectedTrialTypes);
+clear expectedTrialTypes
+
+%% get timings for trials
+
+
+%% TODO estimate timings for each maze
+
+%% use imagesc http://de.mathworks.com/help/matlab/ref/imagesc.html
+%  to plot the heatmap
+%  Map brightness to timing (TIC) and colors to type of cell
+%  None existing cells rendered black
+
