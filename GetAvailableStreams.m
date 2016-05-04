@@ -9,6 +9,6 @@ function infos = GetAvailableStreams( experiment_data )
         stream_info.name = a_single_stream.info.name;
         stream_info.type = a_single_stream.info.type;
         infos{i} = stream_info;
-        clear i a_single_stream
     end
+    clear i a_single_stream
 end
