@@ -1,11 +1,12 @@
 function filteredStream = FilterStreamByMarkers( stream, markerPattern )
 %FILTERSTREAMBYMARKER get a subset of elements from the stream by 
 %   using patterns describing the markers you want
+%   use regular expressions to find complex markers
 
 lengthOfAllSamples = length(stream.time_series);
 samples = stream.time_series;
 timeStamps = stream.time_stamps;
-indexOfFilteredStream = 1
+indexOfFilteredStream = 1;
 
 for i=1 : lengthOfAllSamples
     currentMarker = samples{i};
@@ -20,6 +21,6 @@ for i=1 : lengthOfAllSamples
     end
 end
 
-    filteredStream = selectedElements
+filteredStream = selectedElements;
 end
 

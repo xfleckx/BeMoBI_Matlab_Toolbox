@@ -4,7 +4,7 @@ function PrettyPrint( streamInfos )
 %streamInfos
     for i=1:numel(streamInfos),
         info = streamInfos{i};
-        formated = sprintf([info.idx, '# ', 'Name: ', info.name, '\n', '       ', 'Type: ' info.type ]);
+        formated = sprintf([int2str(info.idx), '# ', 'Name: ', info.name, '\n', '       ', 'Type: ' info.type ]);
         disp(formated);
         clear formated info
     end
