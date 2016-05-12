@@ -11,12 +11,22 @@ end
 
 %%Subfunctions - only accesible in the file within the primary function
 
-function [ output_args ] = traverseMarker( stream , i)
+function [ output_args ] = traverseMarker( stream, i)
 %TRAVERSEMARKERSTREAM Summary of this function goes here
 %   Detailed explanation goes here
+markerStartCondition = '(Start Condition)';
+markerEndCondition = '(End Condition)'
 
 for i = i:numel(stream.time_series)
-    if(
+    
+    current = stream.time_series{i};
+    
+    if(~isempty(regexp(current,markerStartCondition)))
+        display('Found Start Condition');
+    elseif(~isempty(regexp(current,patternForEndCondition)))
+        display('Found Start Condition');
+    end
+    
 end
 
 end
