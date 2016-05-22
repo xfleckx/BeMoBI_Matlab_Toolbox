@@ -2,6 +2,7 @@
 
 %% Check whether dependencies are missing
 DependencyCheck('load_xdf.m');
+DependencyCheck('eeglab');
 
 %% Load an xdf file
 [experiment_data, ~] = load_xdf('testData/the_first_mobivr_pilot.xdf');
