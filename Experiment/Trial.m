@@ -7,6 +7,7 @@ classdef Trial
         Path
         Object
         Turns
+        Tics
     end
     
     methods

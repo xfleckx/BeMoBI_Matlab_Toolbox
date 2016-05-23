@@ -3,14 +3,23 @@ classdef TrialReader < handle
     %   Detailed explanation goes here
     
     properties
-       patternBegin = 'BeginTrial';
-       patternEnd = 'EndTrial';
+       patternBegin = 'BeginTrial'
+       patternEnd = 'EndTrial'
+       unitEnter = 'Entering Unit'
+       unitExit = 'Exiting Unit'
+       turn = 'Turn'
+       turnCorrect = 'Turn From'
+       turnIncorrect = 'Incorrect Turn'
     end
     
     properties (Access = private)
         trial
         current
+        next
+        maze
+        unitEnterTime
     end
+    
     
     methods
         function obj = TrialReader()
@@ -21,14 +30,12 @@ classdef TrialReader < handle
             
             if(strfind(obj.current.type, obj.patternBegin))
                 
-                disp(obj.current.type);
+                disp('Start Parsing one Trial');
                 
                 obj.trial = Trial(); 
-                
+                obj.unitEnterTime = 0;
                 while isempty(strfind(obj.current.type, obj.patternEnd))
                     disp(obj.current.type);    
-                    
-                    atIndex = atIndex + 1;
                     
                     if(atIndex > length(stream))
                         msgID = 'MYFUN:BadIndex';
@@ -37,8 +44,43 @@ classdef TrialReader < handle
                         throw(baseException)
                     end
                     
+                    if(strfind(obj.current.type, obj.unitEnter))
+            
+                        obj.next = stream(atIndex + 1);            
+                        obj.unitEnterTime = obj.current.latency;
+                        disp(obj.next);
+                        
+                              
+%                         msgID = 'MYFUN:CorruptStream';
+%                         msg = 'Missing Exiting Unit Marker!';
+%                         baseException = MException(msgID,msg);
+%                         throw(baseException) 
+                        
+                    end
+                     
+                    if(strfind(obj.current.type, obj.turn))
+                            disp(obj.current.type);
+                    end
+                    
+                    if(strfind(obj.current.type, obj.unitExit))
+
+                        c = regexp(obj.current.type, '\d', 'match');
+                        x = c{1};
+                        y = c{2};
+                        deltaTime = obj.current.latency - obj.unitEnterTime;
+
+                        obj.trial.Tics(x,y) = deltaTime;
+                    end
+                    
+                    atIndex = atIndex + 1;
                     obj.current = stream(atIndex);
+                    
                 end
+                
+                disp('End Parsing one Trial');
+                obj.trial.Tics(all(~obj.trial.Tics, 1), : ) = [];
+                
+                obj.trial.Tics( :, all(~obj.trial.Tics, 1)) = [];
                 
                 newTrial = obj.trial;
             end
