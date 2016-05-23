@@ -5,6 +5,8 @@ classdef ExperimentReader < handle
     properties(Access = public)
         markerStartCondition = 'Begin Condition';
         markerEndCondition = 'End Condition';
+        markerStartExperiment = 'Start Experiment';
+        markerEndExperiment = 'End Experiment';
     end
     
     properties (Access = protected)

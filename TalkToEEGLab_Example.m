@@ -4,12 +4,18 @@ eeglab
 %% Load MoBILAB
 mobilab
 
-%%
-mobilab.allStreams = dataSourceXDF( 'testData\the_first_mobivr_pilot_MoBI');
+%% load
+allStreams = dataSourceXDF( 'testData\the_first_mobivr_pilot_MoBI');
 
 %% Export the eeg and data stream to eeglab - the ID's are magic numbers 
 %   coming from the xdf stream indicies
 mobilab.allStreams.export2eeglab(1,7);
+
+%% Plot angle velocities of body orientation
+bodyOrientation = mobilab.allStreams.item{4}
+absDiffVelo = abs(diff(bodyOrientation.data) * 0.01);
+figure;
+plot(absDiffVelo);
 
 %% get Data stream after loading it through MoBILab
 markerStream = EEG.event;
