@@ -60,6 +60,11 @@ classdef TrialReader < handle
                      
                     if(strfind(obj.current.type, obj.turn))
                             disp(obj.current.type);
+                            newTurn.typeOfTurn = 'Correct';
+                            newTurn.egocentricDirection = 'Left';
+                            newTurn.offsetToLastTurn = 0;
+                            newTurn.typeOfDecision = 'X';
+                            obj.trial.AddTurn(newTurn);
                     end
                     
                     if(strfind(obj.current.type, obj.unitExit))

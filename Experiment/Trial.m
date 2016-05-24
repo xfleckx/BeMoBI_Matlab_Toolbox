@@ -1,4 +1,4 @@
-classdef Trial
+classdef Trial < handle
     %TRIAL Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -11,7 +11,9 @@ classdef Trial
     end
     
     methods
-        
+        function AddTurn(obj, turn)
+            obj.Turns = [obj.Turns turn];
+        end
     end
     
 end
