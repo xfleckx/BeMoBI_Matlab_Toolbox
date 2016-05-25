@@ -8,8 +8,9 @@ classdef TrialReader < handle
        unitEnter = 'Entering Unit'
        unitExit = 'Exiting Unit'
        turn = 'Turn'
-       turnCorrect = 'Turn From'
-       turnIncorrect = 'Incorrect Turn'
+       turnCorrect = 'Correct'
+       turnIncorrect = 'Incorrect'
+       delimiter = char(9)
     end
     
     properties (Access = private)
@@ -18,25 +19,30 @@ classdef TrialReader < handle
         next
         maze
         unitEnterTime
+        experimentData
     end
     
     
     methods
-        function obj = TrialReader()
+        function obj = TrialReader( experimentData )
+           obj.experimentData = experimentData;
         end
-        function newTrial = ReadFrom(obj, stream, atIndex)
+        function [lastIndex, newTrial] = ReadFrom(obj, stream, atIndex)
             
             obj.current = stream(atIndex);
-            
-            if(strfind(obj.current.type, obj.patternBegin))
+            marker = obj.current.type;
+            if(strfind(marker, obj.patternBegin))
                 
                 disp('Start Parsing one Trial');
                 
+                trialDefinition = strsplit(marker, obj.delimiter);
                 obj.trial = Trial(); 
+                obj.trial.Tics = obj.experimentData.Maze
+                obj.trial.Tics = zeros(10,13);
+                
                 obj.unitEnterTime = 0;
-                while isempty(strfind(obj.current.type, obj.patternEnd))
-                    disp(obj.current.type);    
-                    
+                while isempty(strfind(marker, obj.patternEnd))
+                    marker = obj.current.type;
                     if(atIndex > length(stream))
                         msgID = 'MYFUN:BadIndex';
                         msg = 'Trial has no End Marker...';
@@ -44,7 +50,7 @@ classdef TrialReader < handle
                         throw(baseException)
                     end
                     
-                    if(strfind(obj.current.type, obj.unitEnter))
+                    if(strfind(marker, obj.unitEnter))
             
                         obj.next = stream(atIndex + 1);            
                         obj.unitEnterTime = obj.current.latency;
@@ -58,20 +64,29 @@ classdef TrialReader < handle
                         
                     end
                      
-                    if(strfind(obj.current.type, obj.turn))
-                            disp(obj.current.type);
-                            newTurn.typeOfTurn = 'Correct';
-                            newTurn.egocentricDirection = 'Left';
-                            newTurn.offsetToLastTurn = 0;
-                            newTurn.typeOfDecision = 'X';
-                            obj.trial.AddTurn(newTurn);
+                    if(strfind(marker, obj.turn))
+                        values = strsplit(marker, obj.delimiter);
+                        newTurn.typeOfTurn = 'Correct';
+                        newTurn.egocentricDirection = values{end};
+                        newTurn.offsetToLastTurn = 0;
+                        newTurn.typeOfDecision = values{end-1};
+                        obj.trial.AddTurn(newTurn);
+                    end
+                    %special case here for pilot data
+                    if(strfind(obj.current.type, obj.turnIncorrect))
+                        values = strsplit(marker, obj.delimiter);
+                        newTurn.typeOfTurn = 'Incorrect';
+                        newTurn.egocentricDirection = values(end);
+                        newTurn.offsetToLastTurn = 0;
+                        newTurn.typeOfDecision = values(end-1);
+                        obj.trial.AddTurn(newTurn);
                     end
                     
-                    if(strfind(obj.current.type, obj.unitExit))
+                    if(strfind(marker, obj.unitExit))
 
-                        c = regexp(obj.current.type, '\d', 'match');
-                        x = c{1};
-                        y = c{2};
+                        c = regexp(marker, '\d', 'match');
+                        x = str2num( c{1} ) + 1;
+                        y = str2num( c{2} ) + 1;
                         deltaTime = obj.current.latency - obj.unitEnterTime;
 
                         obj.trial.Tics(x,y) = deltaTime;
@@ -82,12 +97,10 @@ classdef TrialReader < handle
                     
                 end
                 
-                disp('End Parsing one Trial');
-                obj.trial.Tics(all(~obj.trial.Tics, 1), : ) = [];
-                
-                obj.trial.Tics( :, all(~obj.trial.Tics, 1)) = [];
+                disp('End Parsing one Trial'); 
                 
                 newTrial = obj.trial;
+                lastIndex = atIndex;
             end
             
         end
